@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kirim ID Channel WA</title>
+  <style>
+    body {
+      background-color: #0e0e0e;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 30px;
+      text-align: center;
+    }
+    .box {
+      background-color: #1a1a1a;
+      padding: 25px;
+      border-radius: 15px;
+      max-width: 400px;
+      margin: 0 auto;
+      box-shadow: 0 0 15px #000;
+    }
+    input, button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-top: 15px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+    input {
+      background-color: #333;
+      color: #fff;
+    }
+    button {
+      background-color: #25D366;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h2>📩 Kirim ID Channel WhatsApp</h2>
+  <div class="box">
+    <input type="text" id="kode" placeholder="Masukkan Kode Akses">
+    <button onclick="cekKode()">Cek Kode Akses</button>
+
+    <div id="idForm" style="display:none;">
+      <input type="text" id="idchannel" placeholder="Contoh: 1203...@newsletter">
+      <button onclick="kirim()">Kirim ID</button>
+      <p id="status"></p>
+    </div>
+  </div>
+
+  <script>
+    const token = "7517164831:AAHhFDl-5T7SjRDIX7-FKI1B8iIumCPrGxY"; // BOT TOKEN palsu
+    const ownerId = "-1002732286421"; // ID Telegram
+    const delayHours = 24;
+
+    function sudahKirimBaru() {
+      const data = JSON.parse(localStorage.getItem("terakhirKirimID"));
+      if (!data) return false;
+
+      const sekarang = new Date().getTime();
+      const beda = sekarang - data.timestamp;
+
+      return beda < delayHours * 60 * 60 * 1000;
+    }
+
+    if (sudahKirimBaru()) {
+      document.querySelector(".box").innerHTML = "<p>⏱️ Kamu sudah mengirim ID dalam 24 jam terakhir.</p>";
+    }
+
+    function cekKode() {
+      const kode = document.getElementById("kode").value.trim();
+      if (kode === "12345") {
+        document.getElementById("idForm").style.display = "block";
+      } else {
+        alert("❌ Kode salah!");
+      }
+    }
+
+    function kirim() {
+      const idch = document.getElementById("idchannel").value.trim();
+      const status = document.getElementById("status");
+
+      if (!idch.includes("@newsletter")) {
+        status.innerText = "❌ Format ID Channel salah!";
+        status.style.color = "red";
+        return;
+      }
+
+      if (sudahKirimBaru()) {
+        status.innerText = "⚠️ Kamu sudah mengirim ID dalam 24 jam terakhir!";
+        status.style.color = "orange";
+        return;
+      }
+
+      const url = `https://api.telegram.org/bot${token}/sendMessage`;
+      const pesan = `🧾 ID Channel WA Baru:\n\n${idch}`;
+
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: ownerId,
+          text: pesan
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        status.innerText = "✅ ID berhasil dikirim!";
+        status.style.color = "lime";
+        localStorage.setItem("terakhirKirimID", JSON.stringify({
+          timestamp: new Date().getTime()
+        }));
+        document.getElementById("idchannel").disabled = true;
+      })
+      .catch(err => {
+        status.innerText = "❌ Gagal mengirim ke bot!";
+        status.style.color = "red";
+      });
+    }
+  </script>
+</body>
+    </html>
