@@ -86,9 +86,9 @@
       }
 
       // Validasi: hanya huruf kecil sebelum @newsletter
-      const validFormat = /^[a-z]+@newsletter$/;
+      const validFormat = /^[1-0]+@newsletter$/;
       if (!validFormat.test(idch)) {
-        status.innerText = "❌ Format ID hanya huruf kecil + @newsletter (tanpa angka/simbol)!";
+        status.innerText = "❌ Format ID hanya huruf kecil + @newsletter (tanpa huruf/simbol)!";
         status.style.color = "red";
         return;
       }
