@@ -59,27 +59,15 @@
   </div>
 
   <script>
-    const token = "7517164831:AAHhFDl-5T7SjRDIX7-FKI1B8iIumCPrGxY"; // BOT TOKEN palsu
-    const ownerId = "-1002732286421"; // ID Telegram
-    const delayHours = 24;
+    const token = "7517164831:AAHhFDl-5T7SjRDIX7-FKI1B8iIumCPrGxY"; // Ganti kalau real
+    const ownerId = "6629230649"; // ID lu
 
-    function sudahKirimBaru() {
-      const data = JSON.parse(localStorage.getItem("terakhirKirimID"));
-      if (!data) return false;
-
-      const sekarang = new Date().getTime();
-      const beda = sekarang - data.timestamp;
-
-      return beda < delayHours * 60 * 60 * 1000;
-    }
-
-    if (sudahKirimBaru()) {
-      document.querySelector(".box").innerHTML = "<p>⏱️ Kamu sudah mengirim ID dalam 24 jam terakhir.</p>";
-    }
+    const storageKey = "lastSendTime";
+    const oneDay = 24 * 60 * 60 * 1000;
 
     function cekKode() {
-      const kode = document.getElementById("kode").value.trim();
-      if (kode === "12345") {
+      const kode = document.getElementById("kode").value.trim().toLowerCase();
+      if (kode === "push channel") {
         document.getElementById("idForm").style.display = "block";
       } else {
         alert("❌ Kode salah!");
@@ -90,14 +78,19 @@
       const idch = document.getElementById("idchannel").value.trim();
       const status = document.getElementById("status");
 
-      if (!idch.includes("@newsletter")) {
-        status.innerText = "❌ Format ID Channel salah!";
+      // Cek jumlah @newsletter
+      const count = (idch.match(/@newsletter/g) || []).length;
+      if (count !== 1) {
+        status.innerText = "❌ Hanya boleh mengirim 1 ID Channel tolol!";
         status.style.color = "red";
         return;
       }
 
-      if (sudahKirimBaru()) {
-        status.innerText = "⚠️ Kamu sudah mengirim ID dalam 24 jam terakhir!";
+      // Cek waktu terakhir kirim
+      const lastTime = localStorage.getItem(storageKey);
+      const now = Date.now();
+      if (lastTime && now - parseInt(lastTime) < oneDay) {
+        status.innerText = "⚠️ Kamu hanya bisa kirim 1x per 24 jam!";
         status.style.color = "orange";
         return;
       }
@@ -117,9 +110,7 @@
       .then(data => {
         status.innerText = "✅ ID berhasil dikirim!";
         status.style.color = "lime";
-        localStorage.setItem("terakhirKirimID", JSON.stringify({
-          timestamp: new Date().getTime()
-        }));
+        localStorage.setItem(storageKey, now.toString());
         document.getElementById("idchannel").disabled = true;
       })
       .catch(err => {
@@ -129,4 +120,4 @@
     }
   </script>
 </body>
-    </html>
+</html>
