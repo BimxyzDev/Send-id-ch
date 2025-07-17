@@ -52,15 +52,16 @@
     <button onclick="cekKode()">Cek Kode Akses</button>
 
     <div id="idForm" style="display:none;">
-      <input type="text" id="idchannel" placeholder="Contoh: channelmu@newsletter">
+      <input type="text" id="idchannel" placeholder="Contoh: 1203...@newsletter">
       <button onclick="kirim()">Kirim ID</button>
       <p id="status"></p>
     </div>
   </div>
 
   <script>
-    const token = "7517164831:AAHhFDl-5T7SjRDIX7-FKI1B8iIumCPrGxY"; // Token bot palsu
+    const token = "7517164831:AAHhFDl-5T7SjRDIX7-FKI1B8iIumCPrGxY"; // BOT TOKEN palsu
     const ownerId = "-1002732286421"; // ID Telegram kamu
+
     const storageKey = "lastSendTime";
     const oneDay = 24 * 60 * 60 * 1000;
 
@@ -77,23 +78,17 @@
       const idch = document.getElementById("idchannel").value.trim();
       const status = document.getElementById("status");
 
-      // Hitung jumlah @newsletter
-      const atCount = (idch.match(/@newsletter/g) || []).length;
-      if (atCount !== 1) {
-        status.innerText = "❌ Hanya boleh mengirim 1 ID Channel yang valid!";
-        status.style.color = "red";
-        return;
-      }
-
-      // Validasi: hanya huruf kecil sebelum @newsletter
+      // Validasi harus angka + @newsletter
       const validFormat = /^[0-9]+@newsletter$/;
-      if (!validFormat.test(idch)) {
-        status.innerText = "❌ Format ID hanya huruf kecil + @newsletter (tanpa huruf/simbol)!";
+      const count = (idch.match(/@newsletter/g) || []).length;
+
+      if (!validFormat.test(idch) || count !== 1) {
+        status.innerText = "❌ Hanya boleh 1 ID, dan harus angka diikuti @newsletter!";
         status.style.color = "red";
         return;
       }
 
-      // Cek batas waktu 24 jam
+      // Anti spam per 24 jam
       const lastTime = localStorage.getItem(storageKey);
       const now = Date.now();
       if (lastTime && now - parseInt(lastTime) < oneDay) {
